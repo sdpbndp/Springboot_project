@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<h2 style="text-align:center">ADD Movie Details</h2>
+<html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css" />
+<style type="text/css">
+    .bootstrap-select:not([class*="col-"]):not([class*="form-control"]):not(.input-group-btn) {
+        width: 100%;
+
+    }
+</style>
+
+<body>
+
+    <div class="container">
+        <div class="row main">
+            <div class="main-login main-center">
+                <div class="alert" id="response-message">
+                </div>
+                <form id="register_form" name="add_movie_details">
+                    <div class="form-group">
+                        <label class="cols-sm-2 control-label">Name of the Movie:</label>
+                        <div class="cols-sm-10">
+                            <input maxlength="256" type="text" class="form-control" name="Movie" id="name"
+                                   onchange="checkError('name', 'error_name')"
+                                   placeholder="Enter Your Movie Name Here...." />
+                        </div>
+                        <span id="error_name" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <div class="cols-sm-10">
+                            <label class="cols-sm-2 control-label">Genre:</label>
+                            <div class="cols-sm-100 " id="genress">
+                                <select placeholder="Genres" class="selectpicker" multiple data-live-search="false"
+                                        onchange="onGenre()" name="Movie" id="genres">
+                                </select>
+                            </div>
+                        </div>
+                        <span class="help-block">Select one or multiple genres</span>
+                        <span id="error_genres" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <div class="cols-sm-10">
+                            <label class="cols-sm-2 control-label">Language:</label>
+                            <div class="cols-sm-100 " id="Language">
+                                <select class="selectpicker" multiple data-live-search="false" onchange="onLanguage()"
+                                        id="languages" name="languages">
+                                </select>
+                            </div>
+                            <span class="help-block">Select one or multiple languages</span>
+                        </div>
+                        <span id="error_language" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label class="cols-sm-2 control-label">Release Date:</label>
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-calendar fa" aria-hidden="true"></i></span>
+                            <input type="date" class="form-control" name="Release_date"
+                                   onchange="checkError('releaseDate', 'error_date')" id="releaseDate">
+                        </div>
+                        <span id="error_date" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <button id="submit" class="btn btn-success" type="button" onclick="onSubmit()">Add
+                            Movie</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        async function getLanguages(){
+            const response = await fetch('http://localhost:8080/all-languages', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+            if (data?.data?.length) {
+            const options = data.data.map(e=>{
+                return `<option value="${e.id}">${e.name}</option>`
+            });
+                const select = document.getElementById("languages");
+                data.data.forEach(e => {
+                    const newOption = document.createElement('option');
+                    const optionText = document.createTextNode(e.name);
+                    newOption.appendChild(optionText);
+                    newOption.setAttribute('value', e.id);
+                    select.appendChild(newOption);
+                });
+                $("select").selectpicker("refresh");
+            }
+        }
+
+        async function getGenres(){
+            const response = await fetch('http://localhost:8080/all-genres', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+            if (data?.data?.length) {
+            const options = data.data.map(e=>{
+                return `<option value="${e.id}">${e.name}</option>`
+            });
+                const select = document.getElementById("genres");
+                data.data.forEach(e => {
+                    const newOption = document.createElement('option');
+                    const optionText = document.createTextNode(e.name);
+                    newOption.appendChild(optionText);
+                    newOption.setAttribute('value', e.id);
+                    select.appendChild(newOption);
+                });
+                $("select").selectpicker("refresh");
+            }
+        }
+        window.onload = async function () {
+            getLanguages();
+            getGenres();
+        }
+        var errorMessages = [
+            { fieldName: "name", errorText: "Please Enter a Movie Name.", errorSpanName: 'error_name' },
+            { fieldName: "genres", errorText: "Please Select at least one Genres.", errorSpanName: 'error_genres' },
+            { fieldName: "languages", errorText: "Please Select at least one languages.", errorSpanName: 'error_language' },
+            { fieldName: "releaseDate", errorText: "Please Select a date.", errorSpanName: 'error_date' }
+        ];
+        var selectedLanguages = [];
+        var selectedGenres = [];
+        var today = new Date();
+        let releaseDate = document.getElementById("releaseDate");
+        releaseDate.max = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`;
+
+        function checkError(fieldName, errorSpanName) {
+            if (fieldName !== 'genres' && fieldName !== 'languages')
+                document.getElementById(errorSpanName).innerHTML = !document.getElementById(fieldName).value ? errorMessages.find(data => data.fieldName === fieldName)?.errorText : '';
+            else {
+                if (fieldName === 'genres') {
+                    document.getElementById(errorSpanName).innerHTML = selectedGenres.length === 0 ? errorMessages.find(data => data.fieldName === fieldName)?.errorText : '';
+                }
+                if (fieldName === 'languages') {
+                    document.getElementById(errorSpanName).innerHTML = selectedLanguages.length === 0 ? errorMessages.find(data => data.fieldName === fieldName)?.errorText : '';
+                }
+            }
+        }
+        async function onSubmit() {
+            let value = {};
+            errorMessages.forEach(data => {
+                checkError(data.fieldName, data.errorSpanName);
+            });
+            const requestCheck = makeRequestBody();
+            if (requestCheck.isValid) {
+                const response = await fetch('http://localhost:8080/add-movie', {
+                    method: 'POST',
+                    body: JSON.stringify(requestCheck.data),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                const element = document.getElementById("response-message");
+                element.className = `alert ${data.success ? 'alert-success' : 'alert-danger'}`;
+                element.textContent = `${data.message || (data.success ? "Movie added successfully" : "Something went wrong")}`;
+                setTimeout(()=>{
+                        element.className = `alert`;
+                        element.textContent = "";
+                    }, 5000);
+                if(data.success == 0){
+                    if(data.error){
+                        for (var key in data.error) {
+                            errorSpanName = errorMessages.find(error => error.fieldName == key)?.errorSpanName;
+                            if (errorSpanName) {
+                                document.getElementById(errorSpanName).innerHTML = data.error[key];
+                            }
+                        }
+                    }
+                } else {
+                    document.getElementById("name").value = "";
+                    document.getElementById("genres").value = "";
+                    document.getElementById("languages").value = "";
+                    document.getElementById("releaseDate").value = "";
+                    selectedGenres = [];
+                    selectedLanguages = [];
+                    onGenre(false);
+                    onLanguage(false);
+                    $("select").selectpicker("refresh");
+                }
+            }
+        }
+
+        function makeRequestBody() {
+            const name = document.getElementById("name").value;
+            const releaseDate = document.getElementById("releaseDate").value;
+            return {
+                isValid: (name && releaseDate && selectedGenres.length && selectedLanguages.length), data: {
+                    name, releaseDate, genres: selectedGenres, languages: selectedLanguages
+                }
+            };
+        }
+
+        function onLanguage(isCheckErrorRequired = true) {
+            const options = document.getElementById("languages").selectedOptions;
+            selectedLanguages = [];
+            for (let i = 0; i < options?.length ?? 0; i++) {
+                selectedLanguages.push(options[i].value);
+            }
+            if(isCheckErrorRequired)
+                checkError('languages', 'error_language');
+        }
+
+        function onGenre(isCheckErrorRequired = true) {
+            const options = document.getElementById("genres").selectedOptions;
+            selectedGenres = [];
+            for (let i = 0; i < options?.length ?? 0; i++) {
+                selectedGenres.push(options[i].value);
+            }
+            if(isCheckErrorRequired)
+                checkError('genres', 'error_genres');
+        }
+    </script>
+</body>
+
+</html>
