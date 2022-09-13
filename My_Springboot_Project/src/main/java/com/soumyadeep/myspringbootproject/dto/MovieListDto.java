@@ -6,10 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class MovieDto {
+public class MovieListDto {
     private String name;
-    private Long id;
+    private String genre;
+    private String language;
+    private Float rating;
 }

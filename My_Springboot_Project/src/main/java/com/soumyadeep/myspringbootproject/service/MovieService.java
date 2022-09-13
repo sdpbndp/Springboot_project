@@ -2,6 +2,8 @@ package com.soumyadeep.myspringbootproject.service;
 
 import com.soumyadeep.myspringbootproject.dto.AddMovieDto;
 import com.soumyadeep.myspringbootproject.dto.MovieDto;
+import com.soumyadeep.myspringbootproject.dto.MovieListDto;
+import com.soumyadeep.myspringbootproject.entity.Movie;
 import com.soumyadeep.myspringbootproject.dto.ReviewMovieDto;
 import com.soumyadeep.myspringbootproject.entity.Genre;
 import com.soumyadeep.myspringbootproject.entity.Language;
@@ -24,5 +26,7 @@ public interface MovieService {
     public HashMap<String, Object> validateReviewMovieRequest(ReviewMovieDto data);
 
     public void reviewMovie(ReviewMovieDto data);
+
+    public List<MovieListDto> getMovieList(Long genre, Long language, Integer year);
 
 }

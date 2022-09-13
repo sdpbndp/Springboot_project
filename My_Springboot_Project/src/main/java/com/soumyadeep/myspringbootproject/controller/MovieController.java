@@ -2,10 +2,11 @@ package com.soumyadeep.myspringbootproject.controller;
 
 import com.soumyadeep.myspringbootproject.dto.AddMovieDto;
 import com.soumyadeep.myspringbootproject.dto.MovieDto;
+import com.soumyadeep.myspringbootproject.dto.MovieListDto;
 import com.soumyadeep.myspringbootproject.dto.ReviewMovieDto;
 import com.soumyadeep.myspringbootproject.entity.Genre;
-import com.soumyadeep.myspringbootproject.entity.Movie;
 import com.soumyadeep.myspringbootproject.entity.Language;
+import com.soumyadeep.myspringbootproject.entity.Movie;
 import com.soumyadeep.myspringbootproject.service.MovieService;
 import com.soumyadeep.myspringbootproject.service.UtilityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,6 +79,17 @@ public class MovieController {
         }
         List<MovieDto> data = movieService.getMovies(genre, language);
         return utilityService.sendSuccessResponse(data);
+    }
+
+    @GetMapping("/get-movie-list")
+    public ResponseEntity getMovieLists(@RequestParam(required = false) Long genre, @RequestParam(required = false) Long language, @RequestParam(required = false) Integer year){
+        List<MovieListDto> movies = movieService.getMovieList(genre, language, year);
+        return utilityService.sendSuccessResponse(movies);
+    }
+
+    @GetMapping("/")
+    public String getMovieLists(){
+        return "movie-list";
     }
 
 }

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<h2 style="text-align:center">Movie List</h2>
+<html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.js"></script>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css" />
+
+<body>
+
+<div class="container">
+<style>
+    
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    
+    th, td {
+      border: 2px solid #063838;
+      text-align: left;
+      padding: 8px;
+    }
+    
+    tr:nth-child(even) {
+      background-color: #D6EEEE;
+    }
+    </style>
+    </head>
+    <style>
+        .grid-container {
+          display: grid;
+          height: 80px;
+          align-content: start;
+          grid-template-columns: 350px 350px 350px 100px;
+          gap: 2px;
+          padding: 2px;
+          /* background-color: #021212; */
+        }
+        
+        .grid-container > div {
+          background-color: rgba(255, 255, 255, 0.8);
+          text-align: center;
+          height: 50px;
+          padding: 2px 6px;
+          font-size: 15px;
+          border-radius: 15px;
+        }
+        </style>
+    <body>
+        <div class="container">
+            <p>Filtr Search:</p>
+        </div>
+        <div class="grid-container">
+            <div>
+                <div class="cols-sm-10">
+                    <div class="cols-sm-10">
+                    <select class="form-control" name="genres" id="genres">
+                        <option value="">Choose Genre</option>
+                    </select>
+                    </div>
+            </div>
+            </div>
+            <div>
+                <div class="cols-sm-10" >
+                    <select class="form-control" name="languages" id="languages" >
+                    <option value="" >Choose Language</option>
+                    </select>
+                    </div>
+            </div>
+            <div>
+                <div class="cols-sm-10">
+                    <div class="cols-sm-10">
+                        <select class="form-control" name="year" id="year" >
+                        <option value="">Choose year</option>
+                    </select>
+                    </div>
+            </div>
+            </div>
+            <div>
+                <button type="search"value="search" id="search" class="btn btn-success">Search</button>
+            </div>
+            <div class="container">
+                <table>
+                <tr>
+                <th>Movie Name</th>
+                <th>Genres</th>
+                <th>Languages</th>
+                <th>Year</th>
+                <th>Average Rating</th>
+                </tr>
+                <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>4</td>
+                <td>4</td>
+                </tr>
+                <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>3</td>
+                <td>4</td>
+                </tr>
+                <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>2</td>
+                <td>4</td>
+                </tr>
+                <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>1</td>
+                <td>4</td>
+                </tr>
+                </table>
+                </div>
+          </div>
+</div>
+
+<script>
+    async function getLanguages(){
+            const response = await fetch('all-languages', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+            if (data?.data?.length) {
+            const options = data.data.map(e=>{
+                return `<option value="${e.id}">${e.name}</option>`
+            });
+                const select = document.getElementById("languages");
+                data.data.forEach(e => {
+                    const newOption = document.createElement('option');
+                    const optionText = document.createTextNode(e.name);
+                    newOption.appendChild(optionText);
+                    newOption.setAttribute('value', e.id);
+                    select.appendChild(newOption);
+                });
+            }
+        }
+
+        async function getGenres(){
+            const response = await fetch('all-genres', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+            if (data?.data?.length) {
+            const options = data.data.map(e=>{
+                return `<option value="${e.id}">${e.name}</option>`
+            });
+                const select = document.getElementById("genres");
+                data.data.forEach(e => {
+                    const newOption = document.createElement('option');
+                    const optionText = document.createTextNode(e.name);
+                    newOption.appendChild(optionText);
+                    newOption.setAttribute('value', e.id);
+                    select.appendChild(newOption);
+                });
+            }
+        }
+
+        async function getMovies(){
+            const genre = document.getElementById("genres").value;
+            const language = document.getElementById("languages").value;
+            const response = await fetch(`get-movies?genre=${genre || 5}&language=${language || 3}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+            if (data?.data?.length) {
+            const options = data.data.map(e=>{
+                return `<option value="${e.id}">${e.name}</option>`
+            });
+                const select = document.getElementById("movie");
+                data.data.forEach(e => {
+                    const newOption = document.createElement('option');
+                    const optionText = document.createTextNode(e.name);
+                    newOption.appendChild(optionText);
+                    newOption.setAttribute('value', e.id);
+                    select.appendChild(newOption);
+                });
+            }
+        }
+        window.onload = async function () {
+            getLanguages();
+            getGenres();
+            getMovies();
+            var i, currentYear, startYear, endYear, newOption, yearPicker;
+            yearPicker = document.getElementById("year");
+            currentYear = (new Date()).getFullYear();
+            startYear = currentYear - 4;
+            endYear = currentYear + 3;
+
+            for (i=startYear;i<=endYear;i++) {
+              newOption = document.createElement("option");
+              newOption.value = i;
+              newOption.label = i;
+                if (i == currentYear) {
+                    newOption.selected = true;
+                }
+              yearPicker.appendChild(newOption);
+            }
+        }
+</script>
+
+</body>
+</html>
+
+

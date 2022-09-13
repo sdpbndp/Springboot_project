@@ -33,4 +33,10 @@ public class Movie {
             name = "movie_id"
     )
     private List<MovieLanguage> movieLanguages;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(
+            name = "movie_id"
+    )
+    private List<Review> reviews;
 }
